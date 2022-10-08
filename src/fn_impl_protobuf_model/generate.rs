@@ -58,10 +58,15 @@ pub fn generate(ast: &syn::DeriveInput) -> proc_macro::TokenStream {
     let template = r#"
     {
         type Item = Self;
-        fn deserialize(bytes: &[u8], _: &Option<std::collections::HashMap<String, String>>) -> Result<Self, String> {
+        fn deserialize(bytes: &[u8], _: &Option<std::collections::HashMap<String, String>>) -> Result<Self, my_service_bus_abstractions::SubscriberError> {
             match prost::Message::decode(bytes) {
                 Ok(ok) => Ok(ok),
-                Err(err) => Err(format!("Error deserializing protobuf: {}", err)),
+                Err(err) => Err(
+                    my_service_bus_abstractions::SubscriberError::CanNotDeserializeMessage(format!(
+                        "Error deserializing protobuf: {}",
+                        err
+                    )),
+                ),
             }
         }
     }
