@@ -8,6 +8,7 @@ pub fn generate(ast: &syn::DeriveInput) -> proc_macro::TokenStream {
     result.push_str(format!("impl {} ", struct_name).as_str());
 
     let template = r#"
+    {
         pub fn as_protobuf_bytes(&self) -> Result<Vec<u8>, prost::EncodeError> {
             let mut result = Vec::new();
             prost::Message::encode(self, &mut result)?;
@@ -34,8 +35,8 @@ pub fn generate(ast: &syn::DeriveInput) -> proc_macro::TokenStream {
     {
         fn serialize(
             &self,
-            headers: Option<HashMap<String, String>>,
-        ) -> Result<(Vec<u8>, Option<HashMap<String, String>>), String> {
+            headers: Option<std::collections::HashMap<String, String>>,
+        ) -> Result<(Vec<u8>, Option<std::collections::HashMap<String, String>>), String> {
             match self.as_protobuf_bytes() {
                 Ok(result) => Ok((result, headers)),
                 Err(err) => Err(format!("Error serializing protobuf: {}", err)),
@@ -57,7 +58,7 @@ pub fn generate(ast: &syn::DeriveInput) -> proc_macro::TokenStream {
     let template = r#"
     {
         type Item = Self;
-        fn deserialize(bytes: &[u8], _: &Option<HashMap<String, String>>) -> Result<Self, String> {
+        fn deserialize(bytes: &[u8], _: &Option<std::collections::HashMap<String, String>>) -> Result<Self, String> {
             match prost::Message::decode(bytes) {
                 Ok(ok) => Ok(ok),
                 Err(err) => Err(format!("Error deserializing protobuf: {}", err)),
