@@ -1,9 +1,9 @@
 mod fn_impl_protobuf_model;
+mod utils;
 
 use proc_macro::TokenStream;
 
-#[proc_macro_derive(MySbEntityProtobufModel, attributes(db_field_name, debug_sql))]
-pub fn postgres_select_model(input: TokenStream) -> TokenStream {
-    let ast = syn::parse(input).unwrap();
-    crate::fn_impl_protobuf_model::generate(&ast)
+#[proc_macro_attribute]
+pub fn my_sb_entity_protobuf_model(attr: TokenStream, item: TokenStream) -> TokenStream {
+    crate::fn_impl_protobuf_model::generate(attr, item)
 }
