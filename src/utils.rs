@@ -28,13 +28,17 @@ fn split_kv<'s>(src: &'s str) -> (&'s str, Option<&'s str>) {
     let bytes = src.as_bytes();
     for i in 0..src.len() {
         if bytes[i] == b'=' {
+            let mut key = &src[0..i];
+            key = key.trim();
+
             let mut value = &src[i + 1..src.len()];
+            value = value.trim();
 
             if value.as_bytes()[0] == b'"' {
                 value = &value[1..value.len() - 1];
             }
 
-            return (&src[0..i], Some(value));
+            return (key, Some(value));
         }
     }
     (src, None)
@@ -46,6 +50,14 @@ mod tests {
     #[test]
     fn test_parsing_kv() {
         let (key, value) = super::split_kv(r#"key="value""#);
+
+        assert_eq!(key, "key");
+        assert_eq!(value.unwrap(), "value");
+    }
+
+    #[test]
+    fn test_parsing_kv_with_spaces() {
+        let (key, value) = super::split_kv(r#" key = "value" "#);
 
         assert_eq!(key, "key");
         assert_eq!(value.unwrap(), "value");
