@@ -21,6 +21,8 @@ pub fn generate(attr: TokenStream, input: TokenStream) -> proc_macro::TokenStrea
     let struct_name = &ast.ident;
 
     quote!{
+        #ast
+        
         impl #struct_name{
             pub fn as_protobuf_bytes(&self) -> Result<Vec<u8>, prost::EncodeError> {
                 let mut result = Vec::new();
