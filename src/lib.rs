@@ -1,5 +1,4 @@
 mod fn_impl_protobuf_model;
-mod utils;
 
 use proc_macro::TokenStream;
 

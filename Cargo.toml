@@ -11,3 +11,6 @@ proc-macro = true
 [dependencies]
 syn = { version = "*", features = ["extra-traits"] }
 quote = "*"
+
+
+macros-utils = { tag = "0.1.0", git = "https://github.com/MyJetTools/macros-utils.git" }
