@@ -1,14 +1,14 @@
 use proc_macro::TokenStream;
 use quote::quote;
+use types_reader::ParamsList;
 
-pub fn generate(attr: TokenStream, input: TokenStream) -> proc_macro::TokenStream {
+pub fn generate(attr: TokenStream, input: TokenStream) -> Result<proc_macro::TokenStream, syn::Error> {
     let ast: syn::DeriveInput = syn::parse(input).unwrap();
 
-    let attrs_as_string = attr.to_string();
 
-    let attrs = macros_utils::AttributeParams::new(attrs_as_string);
+    let attrs = ParamsList::new(attr.into())?;
 
-    let topic_id = attrs.get_from_single_or_named("topic_id");
+    let topic_id = attrs.try_get_from_single_or_named("topic_id");
 
     if topic_id.is_none() {
         panic!("topic_id parameter is required");
@@ -16,11 +16,11 @@ pub fn generate(attr: TokenStream, input: TokenStream) -> proc_macro::TokenStrea
 
     let topic_id = topic_id.unwrap();
 
-    let topic_id = topic_id.get_value_as_str();
+    let topic_id = topic_id.unwrap_as_string_value()?.as_str();
 
     let struct_name = &ast.ident;
 
-    quote!{
+    let result = quote!{
         #ast
         
         impl #struct_name{
@@ -72,5 +72,7 @@ pub fn generate(attr: TokenStream, input: TokenStream) -> proc_macro::TokenStrea
             }
         }
 
-    }.into()
+    }.into();
+
+    Ok(result)
 }
