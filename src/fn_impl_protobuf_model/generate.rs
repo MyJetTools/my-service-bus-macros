@@ -6,7 +6,7 @@ pub fn generate(attr: TokenStream, input: TokenStream) -> Result<proc_macro::Tok
     let ast: syn::DeriveInput = syn::parse(input).unwrap();
 
 
-    let attrs = ParamsList::new(attr.into())?;
+    let attrs = ParamsList::new(attr.into(), ||None)?;
 
     let topic_id = attrs.try_get_from_single_or_named("topic_id");
 
